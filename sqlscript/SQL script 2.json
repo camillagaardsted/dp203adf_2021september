@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 2",
+	"properties": {
+		"content": {
+			"query": "\n\n-- vi skal have data ind i vores DW (dedicated pool)\n-- Klassisk load teknik er at anvende External tables \n\n-- fra serverless havde vi det her:\nSELECT\n     *, CAST(datotid AS DATETIME2)  AS Dato\nFROM\n    OPENROWSET(\n        BULK 'data2021_09_06_11_03_49.csv',\n        DATA_SOURCE = 'RaspberryContainer',\n        FORMAT = 'CSV',\n        PARSER_VERSION='2.0',\n        HEADER_ROW = TRUE\n    ) \n    WITH\n    (\n        SensorId    INT 1,      -- første kolonne i filen har nr 1\n        DatoTid     NVARCHAR(20) 2,\n         --DatoTid     DATETIME2 2,\n        TemperaturFraTryk  DECIMAL(9,6) 4,\n        Humidity    DECIMAL(9,6) 5,    \n        Pressure    DECIMAL(19,6) 6\n    ) AS [result]\n\n\nCREATE SCHEMA ext\n\n\nCREATE EXTERNAL FILE FORMAT TextFile\nWITH ( \n    FORMAT_TYPE = DelimitedText,\n    FORMAT_OPTIONS (FIELD_TERMINATOR = ',',First_Row = 2 --, DATE_FORMAT = 'yyyy-MM-ddTHH:mm:ss'\n\t)\n);\n\ndrop EXTERNAL DATA SOURCE AzureStorage\n\n\n\nCREATE EXTERNAL DATA SOURCE AzureStorage\nWITH (\n    TYPE = HADOOP,\n    LOCATION = 'wasbs://raspberry@datalake20210906.blob.core.windows.net',\n    CREDENTIAL = AzureStorageCredential\n);\n\nCREATE MASTER KEY;\n\ndrop DATABASE SCOPED CREDENTIAL AzureStorageCredential\nCREATE DATABASE SCOPED CREDENTIAL AzureStorageCredential\nWITH\n    IDENTITY = 'RaspDataIdenity'    \n    ,SECRET = 'zk78tmTQ8TWl8G7a+Hh3vKmm5rVHYdQa48VGbci/OOgHV0VnQyMsPJTNedUXl0fkRrrImr7quqP1QYP5gQpecQ==' -- put key1's value here\n;\n\n\n\nCREATE EXTERNAL TABLE ext.RaspData (\n    SensorId INT NOT NULL,\n    Dato VARCHAR(20) NOT NULL,\t\t--GRRRRR ISO8601Dato format er ikke underst�ttet (endnu)\t\n    Temperature_humidity DECIMAL(9,4) NOT NULL,\n\tTemperature_pressure DECIMAL(9,4) NOT NULL,\n\tHumidity DECIMAL(9,4) NOT NULL,\n\tPressure DECIMAL(19,4) NOT NULL\n)\nWITH (\n    LOCATION='/',\n    DATA_SOURCE=AzureStorage,\n    FILE_FORMAT=TextFile -- vi har defineret den her h�jere oppe \n);\n\n\nSELECT  SensorId, CAST(Dato AS DATETIME2), Pressure  AS DatoTid\n FROM ext.raspdata\n\n\nCREATE SCHEMA prod\n\nCREATE TABLE prod.RaspData\n(\n    Sensorid INT\n    , DatoTid DATETIME2\n    , Pressure float\n)\nWITH (\n    CLUSTERED COLUMNSTORE INDEX,\n    DISTRIBUTION = ROUND_ROBIN\n)\n\nINSERT INTO prod.Raspdata\nSELECT  SensorId, CAST(Dato AS DATETIME2), Pressure  AS DatoTid\n FROM ext.raspdata\n\n\n\nSELECT      *\nFROM        prod.raspdata\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "sqlpool2021",
+				"poolName": "sqlpool2021"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

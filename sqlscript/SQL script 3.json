@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 3",
+	"properties": {
+		"content": {
+			"query": "\n\n-- vi skal have data ind i vores DW (dedicated pool)\n-- Klassisk load teknik er at anvende External tables \n\n-- Kendt som polybase - vi trækker fra blobstorage/datalake og loader parallelt på noderne i vores DW\n\n-- her vil jeg lave externe tabeller som peger videre til datalaken\nCREATE SCHEMA extern\n\n\n\n\nCREATE EXTERNAL FILE FORMAT TextFile\nWITH ( \n    FORMAT_TYPE = DelimitedText,\n    FORMAT_OPTIONS (FIELD_TERMINATOR = ',',First_Row = 2 --, DATE_FORMAT = 'yyyy-MM-ddTHH:mm:ss'\n\t)\n);\n\n\nCREATE EXTERNAL DATA SOURCE AzureStorage2\nWITH (\n    TYPE = HADOOP,\n    LOCATION = 'abfss://raspberry@datalake20210906.blob.core.windows.net'\n\n);\n\n\nDROP EXTERNAL TABLE ext.RaspData3\n\nCREATE EXTERNAL TABLE ext.RaspDataOnsdag (\n    SensorId INT NOT NULL,\n    Dato VARCHAR(20) NOT NULL,\t\t--GRRRRR ISO8601Dato format er ikke underst�ttet (endnu)\t\n    Temperature_humidity DECIMAL(9,4) NOT NULL,\n\tTemperature_pressure DECIMAL(9,4) NOT NULL,\n\tHumidity DECIMAL(9,4) NOT NULL,\n\tPressure DECIMAL(19,4) NOT NULL\n)\nWITH (\n    LOCATION='data2021_09_06_11_03_49.csv',\n    DATA_SOURCE=AzureStorage2,\n    FILE_FORMAT=TextFile -- vi har defineret den her h�jere oppe \n);\n\n\nselect * from ext.raspdataOnsdag\n\nSELECT  SensorId, CAST(Dato AS DATETIME2), Pressure  AS DatoTid\n FROM ext.raspdata\n\n\nCREATE SCHEMA prod\n\nCREATE TABLE prod.RaspData\n(\n    Sensorid INT\n    , DatoTid DATETIME2\n    , Pressure float\n)\nWITH (\n    CLUSTERED COLUMNSTORE INDEX,\n    DISTRIBUTION = ROUND_ROBIN\n)\n\nCREATE TABLE prod.RaspDataOnsdag\n(\n    Sensorid INT\n    , DatoTid DATETIME2\n    , Pressure float\n)\nWITH (\n    CLUSTERED COLUMNSTORE INDEX, --HEAP -- rowstore index\n    DISTRIBUTION = ROUND_ROBIN    --- der er tre forskellige typer her\n)\n\n\n\n\nINSERT INTO prod.RaspdataOnsdag\nSELECT  SensorId, CAST(Dato AS DATETIME2) AS DatoTid, Pressure  \n FROM ext.raspdataOnsdag\n\n\n\nSELECT      *\nFROM        prod.raspdata\n\n\nSELECT SUSER_SNAME()\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "sqlpool2021",
+				"poolName": "sqlpool2021"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

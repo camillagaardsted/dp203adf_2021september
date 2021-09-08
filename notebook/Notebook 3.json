@@ -1,0 +1,195 @@
+{
+	"name": "Notebook 3",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sparkpool1",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/7980f0ba-821f-4dd7-a6bb-42278a796ec6/resourceGroups/dk/providers/Microsoft.Synapse/workspaces/synapse202210907/bigDataPools/sparkpool1",
+				"name": "sparkpool1",
+				"type": "Spark",
+				"endpoint": "https://synapse202210907.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpool1",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			}
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"%md\r\n",
+					"\r\n",
+					"SynapseSQL connector er linket mellem Spark pool og Dedicated Pool \r\n",
+					"Findes kun til Scala og ikke i python\r\n",
+					"\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "scala"
+					},
+					"collapsed": true
+				},
+				"source": [
+					"%%spark\r\n",
+					"import com.microsoft.spark.sqlanalytics.utils.Constants\r\n",
+					"import org.apache.spark.sql.SqlAnalyticsConnector._\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "scala"
+					},
+					"collapsed": true
+				},
+				"source": [
+					"%%spark\r\n",
+					"val df = spark.read.synapsesql(\"sqlpool2021.dbo.date\")\r\n",
+					"\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "scala"
+					},
+					"collapsed": true
+				},
+				"source": [
+					"%%spark\r\n",
+					"val dfSel = df.select(\"DateID\",\"Date\")\r\n",
+					"\r\n",
+					"dfSel.show()\r\n",
+					"\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"SELECT * FROM sparkdb.matadorchildren"
+				],
+				"attachments": null,
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "scala"
+					},
+					"collapsed": true
+				},
+				"source": [
+					"%%spark\r\n",
+					"dfSel.write.synapsesql(\"sqlpool2021.dbo.DatoUdvalg\",Constants.INTERNAL)\r\n",
+					"// giver en almindelig tabel i vore sqlpool2021"
+				],
+				"attachments": null,
+				"execution_count": 12
+			}
+		]
+	}
+}
