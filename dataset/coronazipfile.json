@@ -1,0 +1,31 @@
+{
+	"name": "coronazipfile",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ssifileservice",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"dailyfilename": {
+				"type": "string",
+				"defaultValue": "overvaagningsdata-covid19-07092021-lx0y"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@dataset().dailyfilename",
+					"type": "Expression"
+				}
+			},
+			"compression": {
+				"type": "ZipDeflate",
+				"level": "Optimal"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

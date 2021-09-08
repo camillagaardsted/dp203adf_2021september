@@ -1,0 +1,9 @@
+{
+	"name": "datafactory20210908",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "339f60e0-20bc-4801-bf69-ec398f4310f1",
+		"tenantId": "4d3154ee-edce-4862-82db-ec6bf5499ba1"
+	}
+}

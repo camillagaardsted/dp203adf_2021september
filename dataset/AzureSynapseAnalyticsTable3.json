@@ -1,0 +1,33 @@
+{
+	"name": "AzureSynapseAnalyticsTable3",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapsepool",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "Dato",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "NewPositive",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PosPct",
+				"type": "float",
+				"precision": 15
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Covid19DataOnsdag"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

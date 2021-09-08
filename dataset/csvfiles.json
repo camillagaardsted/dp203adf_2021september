@@ -1,0 +1,19 @@
+{
+	"name": "csvfiles",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Datalake20210906",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "ssicoviddata",
+				"fileSystem": "datafactorydata"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
