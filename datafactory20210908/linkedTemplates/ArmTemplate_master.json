@@ -1,0 +1,70 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "datafactory20210908"
+		},
+		"Blobstorage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Blobstorage'"
+		},
+		"synapsepool_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'synapsepool'"
+		},
+		"Datalake20210906_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://datalake20210906.dfs.core.windows.net"
+		},
+		"ssifileservice_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://files.ssi.dk/covid19/overvagning/data/"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "datafactory20210908_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"Blobstorage_connectionString": {
+						"value": "[parameters('Blobstorage_connectionString')]"
+					},
+					"synapsepool_connectionString": {
+						"value": "[parameters('synapsepool_connectionString')]"
+					},
+					"Datalake20210906_properties_typeProperties_url": {
+						"value": "[parameters('Datalake20210906_properties_typeProperties_url')]"
+					},
+					"ssifileservice_properties_typeProperties_url": {
+						"value": "[parameters('ssifileservice_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
