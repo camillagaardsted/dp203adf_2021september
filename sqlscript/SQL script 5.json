@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 5",
+	"properties": {
+		"content": {
+			"query": "CREATE CREDENTIAL MyCosmosDbAccountCredential\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n SECRET = 'XpR5yZqMyiMDy5ENW4E2SEevdixLWGA4aOQ6A3NYdRSrSb9n1fqNmjWJmJ7x9suYZhgEssmP3dmJYTSmZSgCVA==';\nGO\n\n\nCREATE OR ALTER VIEW raspdataview\nAS SELECT *\nFROM OPENROWSET(\n      PROVIDER = 'CosmosDB',\n      CONNECTION = 'Account=cosmosdb20210909;Database=raspberry',\n      OBJECT = 'raspdata',\n      SERVER_CREDENTIAL = 'MyCosmosDbAccountCredential'\n    ) with (\n         sensorid INT, \n         id datetime2, \n         pressure float\n    ) as rows\n\n\n    ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "ServerLessDB",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
